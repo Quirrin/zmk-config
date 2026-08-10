@@ -8,7 +8,9 @@
 ---
 include:
   - board: corne_choc_pro_left
+    cmake-args: -DCONFIG_ZMK_STUDIO=y
   - board: corne_choc_pro_right
+    cmake-args: -DCONFIG_ZMK_STUDIO=y
 
   - board: corne_choc_pro_left
     shield: settings_reset
