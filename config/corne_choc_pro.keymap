@@ -2,6 +2,26 @@
  * Copyright (c) 2020 The ZMK Contributors
  *
  * SPDX-License-Identifier: MIT
+ *
+ * Keymap translated from corne-keymaps.vil (Vial/QMK) → ZMK
+ * Layout: Colemak-DH variant, 3 primary layers + BT/system layer
+ *
+ * Physical layout (46 keys):
+ *   Row 0: 14 keys  [L0..L5] [ENC_BTN_L ENC_BTN_R] [R0..R5]
+ *   Row 1: 14 keys  [L0..L5] [ENC_BTN_L ENC_BTN_R] [R0..R5]
+ *   Row 2: 12 keys  [L0..L5]                         [R0..R5]
+ *   Row 3:  6 keys             [Lt0 Lt1 Lt2]  [Rt0 Rt1 Rt2]
+ *
+ * Vial encoder button mapping (Vial column −1 at start/end of row):
+ *   Row 0 L-enc btn = KC_CAPSLOCK  →  &kp CAPS
+ *   Row 0 R-enc btn = KC_NO        →  &kp NO (disabled)
+ *   Row 1 L-enc btn = OSM(RALT)    →  &sk RALT
+ *   Row 1 R-enc btn = KC_PSCREEN   →  &kp PSCRN
+ *
+ * Tap-dance approximations:
+ *   TD(0): tap=LGUI+SPACE  hold=LGUI         → &td0 LGUI LG(SPACE)
+ *   TD(1): tap=sk LSHFT    hold=LCTRL        → &td1 LCTRL LSHFT
+ *   LT1(ESC): layer-tap 1 / ESC              → &lt 1 ESC
  */
 
 #include <behaviors.dtsi>
@@ -16,112 +36,156 @@
 };
 
 / {
+    behaviors {
+        /* TD(0): tap=LGUI+SPACE  hold=LGUI */
+        td0: td0 {
+            compatible = "zmk,behavior-hold-tap";
+            label = "TD0";
+            #binding-cells = <2>;
+            flavor = "tap-preferred";
+            tapping-term-ms = <200>;
+            bindings = <&kp>, <&kp>;
+        };
+
+        /* TD(1): tap=sticky LSHFT  hold=LCTRL */
+        td1: td1 {
+            compatible = "zmk,behavior-hold-tap";
+            label = "TD1";
+            #binding-cells = <2>;
+            flavor = "tap-preferred";
+            tapping-term-ms = <200>;
+            bindings = <&kp>, <&sk>;
+        };
+    };
+
+    /*
+     * Combos (key positions are 0-indexed in physical layout order):
+     *   Positions 0-13  = Row 0 (L0..L5, ENC_L, ENC_R, R0..R5)
+     *   Positions 14-27 = Row 1
+     *   Positions 28-39 = Row 2 (L0..L5, R0..R5)
+     *   Positions 40-45 = Row 3 thumbs (Lt0, Lt1, Lt2, Rt0, Rt1, Rt2)
+     *
+     *   Lt0=40  Lt1=41  Lt2=42    Rt0=43  Rt1=44  Rt2=45
+     */
+    combos {
+        compatible = "zmk,combos";
+        /* Both outer thumbs → BT/System layer */
+        combo_bt {
+            timeout-ms = <50>;
+            key-positions = <40 45>;
+            bindings = <&mo 3>;
+        };
+        /* Both inner thumbs → FN layer (mirrors Vial TD(1) triple-tap MO(2)) */
+        combo_fn {
+            timeout-ms = <50>;
+            key-positions = <41 44>;
+            bindings = <&mo 2>;
+        };
+    };
+
     keymap {
         compatible = "zmk,keymap";
 
+        // ════════════════════════════════════════════════════════════════════
+        // Layer 0 – BASE (Colemak-DH variant from Vial)
+        //
+        // Row 0 (14): L[Q W F P B]  ENC[CAPS  NO]  R[J L U Y ;]  (NO)
+        // Row 1 (14): L[A R S T G]  ENC[skRALT  PSCRN]  R[M N E I O]  (PSCRN)
+        // Row 2 (12): L[Z X C D V]                R[K H , . /]
+        // Thumb (6):  [td0  td1  SPC]  [BSP  lt1ESC  ENT]
+        // ════════════════════════════════════════════════════════════════════
         default_layer {
-            display-name = "QWERTY";
-            // --------------------------------------------------------------------------------
-            // |  TAB |  Q  |  W  |  E  |  R  |  T  |  MUTE |  PP   |  Y  |  U   |  I  |  O  |  P  | BSPC |
-            // | CTRL |  A  |  S  |  D  |  F  |  G  |  LALT |  RALT |  H  |  J   |  K  |  L  |  ;  |  '   |
-            // | SHFT |  Z  |  X  |  C  |  V  |  B  |               |  N  |  M   |  ,  |  .  |  /  | ESC  |
-            //                    | GUI | LWR | SPC |               | ENT | RSE  | ALT |
+            display-name = "BASE";
             bindings = <
-                &kp TAB   &kp Q &kp W &kp E &kp R &kp T &kp C_MUTE &kp C_PP &kp Y &kp U  &kp I     &kp O   &kp P    &kp BSPC
-                &kp LCTRL &kp A &kp S &kp D &kp F &kp G &kp LALT   &kp RALT &kp H &kp J  &kp K     &kp L   &kp SEMI &kp SQT
-                &kp LSHFT &kp Z &kp X &kp C &kp V &kp B                     &kp N &kp M  &kp COMMA &kp DOT &kp FSLH &kp ESC
-                                      &kp LGUI &mo 1 &kp SPACE              &kp RET &mo 2 &kp RALT
+                &kp Q  &kp W  &kp F  &kp P  &kp B  &kp CAPS   &kp NO     &kp J     &kp L  &kp U     &kp Y    &kp SEMI  &kp NO     &kp NO
+                &kp A  &kp R  &kp S  &kp T  &kp G  &sk RALT   &kp PSCRN  &kp M     &kp N  &kp E     &kp I    &kp O     &kp PSCRN  &kp NO
+                &kp Z  &kp X  &kp C  &kp D  &kp V              &kp K      &kp H     &kp COMMA &kp DOT &kp FSLH &kp NO
+                                     &td0 LGUI LG(SPACE)  &td1 LCTRL LSHFT  &kp SPACE    &kp BSPC  &lt 1 ESC  &kp RET
             >;
-            sensor-bindings = <&inc_dec_kp C_VOL_DN C_VOL_UP &inc_dec_kp PG_UP PG_DN &inc_dec_kp C_PREV C_NEXT &inc_dec_kp C_VOL_DN C_VOL_UP>;
-        };
-
-        lower_layer {
-            display-name = "NUMBER";
-            // -----------------------------------------------------------------------------------------
-            // |  TAB |  1  |  2  |  3  |  4  |  5    |  LCTRL | RCTRL |  6  |  7  |  8  |  9  |  0  | BSPC |
-            // | CTRL | BT1 | BT2 | BT3 | BT4 | BT5   |  LALT  | RALT  | LFT | DWN |  UP | RGT |     |      |
-            // | SHFT | BTCR| RGB | RST | BOOT| Unlock|        |       |     |     |     |     |     |      |
-            //                    | GUI |     | SPC   |        | ENT   |     | ALT |
-            bindings = <
-                &kp TAB   &kp N1       &kp N2          &kp N3       &kp N4       &kp N5       &kp LCTRL &kp RCTRL &kp N6   &kp N7   &kp N8 &kp N9    &kp N0 &kp BSPC
-                &kp LCTRL &bt BT_SEL 0 &bt BT_SEL 1    &bt BT_SEL 2 &bt BT_SEL 3 &bt BT_SEL 4 &kp LALT  &kp RALT  &kp LEFT &kp DOWN &kp UP &kp RIGHT &trans &trans
-                &kp LSHFT &bt BT_CLR   &rgb_ug RGB_TOG &sys_reset   &bootloader  &studio_unlock                   &trans   &trans   &trans &trans    &trans &trans
-                                                       &kp LGUI     &trans       &kp SPACE                        &kp LGUI &trans   &kp SPACE
+            sensor-bindings = <
+                &inc_dec_kp C_VOL_DN C_VOL_UP
+                &inc_dec_kp C_BRI_DN C_BRI_UP
+                &inc_dec_kp C_PREV C_NEXT
+                &inc_dec_kp C_VOL_DN C_VOL_UP
             >;
         };
 
-        raise_layer {
-            display-name = "SYMBOL";
-            // -----------------------------------------------------------------------------------------
-            // |  TAB |  !  |  @  |  #  |  $  |  %  | LCTRL | RCTRL |  ^  |  &  |  *  |  (  |  )  | BSPC |
-            // | CTRL | HUD | HUI |     |     |     |  LALT | RALT  |  -  |  =  |  [  |  ]  |  \  |  `   |
-            // | SHFT |     |     |     |     |     |               |  _  |  +  |  {  |  }  | "|" |  ~   |
-            //                    | GUI |     | SPC |               | ENT |     | ALT |
+        // ════════════════════════════════════════════════════════════════════
+        // Layer 1 – SYM / NAV  (hold &lt 1 ESC on right thumb)
+        //
+        // Row 0: L[1 2 3 4 5]  ENC[RGB+  RGB-]  R[6 7 8 9 0]
+        // Row 1: L[` ' - = *]  ENC[LSFT(%)  LSFT(@)]  R[DEL ← ↑ ↓ →]
+        // Row 2: L[( ) [ ] ^]                   R[\ ! & # $]
+        // Thumb: transparent
+        // ════════════════════════════════════════════════════════════════════
+        sym_layer {
+            display-name = "SYM";
             bindings = <
-                &kp  TAB  &kp EXCL        &kp AT          &kp HASH &kp DLLR &kp PRCNT &kp LCTRL &kp RCTRL &kp CARET &kp AMPS  &kp ASTRK &kp LPAR &kp RPAR &kp BSPC
-                &kp LCTRL &rgb_ug RGB_HUD &rgb_ug RGB_HUI &trans   &trans   &trans    &kp LALT  &kp RALT  &kp MINUS &kp EQUAL &kp LBKT  &kp RBKT &kp BSLH &kp GRAVE
-                &kp LSHFT &trans          &trans          &trans   &trans   &trans                        &kp UNDER &kp PLUS  &kp LBRC  &kp RBRC &kp PIPE &kp TILDE
-                                                          &kp LGUI &trans   &kp SPACE                     &kp RET   &trans    &kp RALT
+                &kp N1      &kp N2     &kp N3    &kp N4    &kp N5    &rgb_ug RGB_BRI  &rgb_ug RGB_BRD  &kp N6    &kp N7   &kp N8      &kp N9   &kp N0    &trans  &trans
+                &kp GRAVE   &kp SQT    &kp MINUS &kp EQUAL &kp ASTRK &kp LS(N5)       &kp LS(N2)       &kp DEL   &kp LEFT &kp UP      &kp DOWN &kp RIGHT &trans  &trans
+                &kp LS(N9)  &kp LS(N0) &kp LBKT  &kp RBKT  &kp LS(N6)                                  &kp BSLH  &kp EXCL &kp LS(N7)  &kp HASH &kp LS(N4) &trans
+                                                  &trans    &trans    &trans           &trans   &trans   &trans
+            >;
+        };
+
+        // ════════════════════════════════════════════════════════════════════
+        // Layer 2 – FN / MEDIA  (combo: both inner thumbs)
+        //
+        // Row 0: L[MUTE VOLD VOLU -- BRD]  ENC[BRU  --]  R[-- -- -- -- --]
+        // Row 1: L[-- -- -- -- --]  ENC[F6  F7]  R[HOME PGU PGD END]
+        // Row 2: L[F1 F2 F3 F4 F5]          R[F8 F9 F10 F11 F12]
+        // Thumb: transparent
+        // ════════════════════════════════════════════════════════════════════
+        fn_layer {
+            display-name = "FN";
+            bindings = <
+                &kp C_MUTE &kp C_VOL_DN &kp C_VOL_UP &trans  &kp C_BRI_DN &kp C_BRI_UP  &trans   &trans  &trans    &trans    &trans    &trans   &trans  &trans
+                &trans     &trans       &trans        &trans  &trans       &kp F6         &kp F7   &kp HOME &kp PG_UP &kp PG_DN &kp END  &trans   &trans  &trans
+                &kp F1     &kp F2       &kp F3        &kp F4  &kp F5                                &kp F8   &kp F9    &kp F10   &kp F11  &kp F12  &trans
+                                                      &trans  &trans       &trans          &trans  &trans   &trans
+            >;
+        };
+
+        // ════════════════════════════════════════════════════════════════════
+        // Layer 3 – BT / SYSTEM  (combo: both outer thumbs)
+        // ════════════════════════════════════════════════════════════════════
+        bt_layer {
+            display-name = "BT";
+            bindings = <
+                &bt BT_SEL 0 &bt BT_SEL 1 &bt BT_SEL 2 &bt BT_SEL 3 &bt BT_SEL 4 &bt BT_CLR    &trans  &sys_reset &bootloader    &trans &trans &trans &studio_unlock  &trans
+                &trans       &trans        &trans        &trans        &trans        &trans         &trans  &trans     &rgb_ug RGB_TOG &trans &trans &trans &trans          &trans
+                &trans       &trans        &trans        &trans        &trans                                &trans     &trans         &trans &trans &trans &trans
+                                                         &trans        &trans        &trans          &trans  &trans     &trans
             >;
         };
 
         extra_layer_1 {
             display-name = "EXTRA 1";
             bindings = <
-                &trans &trans &trans &trans &trans &trans &trans &trans &trans &trans &trans &trans &trans &trans
-                &trans &trans &trans &trans &trans &trans &trans &trans &trans &trans &trans &trans &trans &trans
-                &trans &trans &trans &trans &trans &trans               &trans &trans &trans &trans &trans &trans
-                                     &trans &trans &trans               &trans &trans &trans       
+                &trans &trans &trans &trans &trans &trans    &trans    &trans &trans &trans &trans &trans &trans &trans
+                &trans &trans &trans &trans &trans &trans    &trans    &trans &trans &trans &trans &trans &trans &trans
+                &trans &trans &trans &trans &trans                     &trans &trans &trans &trans &trans &trans
+                                    &trans &trans &trans    &trans &trans &trans
             >;
         };
 
         extra_layer_2 {
             display-name = "EXTRA 2";
             bindings = <
-                &trans &trans &trans &trans &trans &trans &trans &trans &trans &trans &trans &trans &trans &trans
-                &trans &trans &trans &trans &trans &trans &trans &trans &trans &trans &trans &trans &trans &trans
-                &trans &trans &trans &trans &trans &trans               &trans &trans &trans &trans &trans &trans
-                                     &trans &trans &trans               &trans &trans &trans       
+                &trans &trans &trans &trans &trans &trans    &trans    &trans &trans &trans &trans &trans &trans &trans
+                &trans &trans &trans &trans &trans &trans    &trans    &trans &trans &trans &trans &trans &trans &trans
+                &trans &trans &trans &trans &trans                     &trans &trans &trans &trans &trans &trans
+                                    &trans &trans &trans    &trans &trans &trans
             >;
         };
 
         extra_layer_3 {
             display-name = "EXTRA 3";
             bindings = <
-                &trans &trans &trans &trans &trans &trans &trans &trans &trans &trans &trans &trans &trans &trans
-                &trans &trans &trans &trans &trans &trans &trans &trans &trans &trans &trans &trans &trans &trans
-                &trans &trans &trans &trans &trans &trans               &trans &trans &trans &trans &trans &trans
-                                     &trans &trans &trans               &trans &trans &trans       
-            >;
-        };
-
-        extra_layer_4 {
-            display-name = "EXTRA 4";
-            bindings = <
-                &trans &trans &trans &trans &trans &trans &trans &trans &trans &trans &trans &trans &trans &trans
-                &trans &trans &trans &trans &trans &trans &trans &trans &trans &trans &trans &trans &trans &trans
-                &trans &trans &trans &trans &trans &trans               &trans &trans &trans &trans &trans &trans
-                                     &trans &trans &trans               &trans &trans &trans       
-            >;
-        };
-
-        extra_layer_5 {
-            display-name = "EXTRA 5";
-            bindings = <
-                &trans &trans &trans &trans &trans &trans &trans &trans &trans &trans &trans &trans &trans &trans
-                &trans &trans &trans &trans &trans &trans &trans &trans &trans &trans &trans &trans &trans &trans
-                &trans &trans &trans &trans &trans &trans               &trans &trans &trans &trans &trans &trans
-                                     &trans &trans &trans               &trans &trans &trans       
-            >;
-        };
-
-        extra_layer_6 {
-            display-name = "EXTRA 6";
-            bindings = <
-                &trans &trans &trans &trans &trans &trans &trans &trans &trans &trans &trans &trans &trans &trans
-                &trans &trans &trans &trans &trans &trans &trans &trans &trans &trans &trans &trans &trans &trans
-                &trans &trans &trans &trans &trans &trans               &trans &trans &trans &trans &trans &trans
-                                     &trans &trans &trans               &trans &trans &trans       
+                &trans &trans &trans &trans &trans &trans    &trans    &trans &trans &trans &trans &trans &trans &trans
+                &trans &trans &trans &trans &trans &trans    &trans    &trans &trans &trans &trans &trans &trans &trans
+                &trans &trans &trans &trans &trans                     &trans &trans &trans &trans &trans &trans
+                                    &trans &trans &trans    &trans &trans &trans
             >;
         };
     };
