@@ -92,7 +92,7 @@
                 &trans  &kp Q  &kp W  &kp F  &kp P  &kp B  &kp CAPS    &kp NO     &kp SEMI  &kp Y  &kp U     &kp L    &kp J    &trans
                 &trans  &kp A  &kp R  &kp S  &kp T  &kp G  &sk RALT    &kp PSCRN  &kp M     &kp N  &kp E     &kp I    &kp O    &trans
                 &trans  &kp Z  &kp X  &kp C  &kp D  &kp V              &kp K      &kp H     &kp COMMA &kp DOT &kp FSLH &trans
-                               &mt LGUI LG(SPACE)  &td1 LCTRL LSHFT  &lt 2 SPACE     &kp BSPC  &lt 1 ESC  &kp RET
+                               &kp LGUI  &td1 LCTRL LSHFT  &lt 2 SPACE     &kp BSPC  &lt 1 ESC  &kp RET
             >;
             sensor-bindings = <
                 &inc_dec_kp C_VOL_DN C_VOL_UP
