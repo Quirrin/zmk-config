@@ -5,7 +5,7 @@
 
 / {
     behaviors {
-        gui_sk: gui_sk {
+        mod_sticky_tap: mod_sticky_tap {
             compatible = "zmk,behavior-hold-tap";
             #binding-cells = <2>;
             flavor = "tap-preferred";
