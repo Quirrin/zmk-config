@@ -6,7 +6,7 @@ arch: arm
 features:
   - keys
   - underglow
-  - studio
+
   - encoder
 outputs:
   - usb
