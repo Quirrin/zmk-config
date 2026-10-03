@@ -87,9 +87,9 @@
             display-name = "BASE";
             bindings = <
                 &kp Q  &kp W  &kp F  &kp P  &kp B  &kp CAPS    &kp J     &kp L  &kp U     &kp Y    &kp SEMI  &kp NO
-                &kp A  &kp R  &kp S  &kp T  &kp G  &sk RALT    &kp M     &kp N  &kp E     &kp I    &kp O     &kp PSCRN
+                &kp A  &kp R  &kp S  &kp T  &kp G  &td1 LCTRL LSHFT    &kp M     &kp N  &kp E     &kp I    &kp O     &kp PSCRN
                 &kp Z  &kp X  &kp C  &kp D  &kp V              &kp K     &kp H  &kp COMMA &kp DOT  &kp FSLH
-                                     &td0 LGUI LG(SPACE)  &td1 LCTRL LSHFT  &kp SPACE    &kp BSPC  &lt 1 ESC  &kp RET
+                                     &td0 LGUI LG(SPACE)  &sk RALT  &kp SPACE    &kp BSPC  &lt 1 ESC  &kp RET
             >;
             sensor-bindings = <
                 &inc_dec_kp C_VOL_DN C_VOL_UP
