@@ -22,11 +22,9 @@
 
 / {
     chosen {
-        zmk,physical-layout = &default_layout;
+        zmk,physical-layout = &five_col_layout;
     };
-};
 
-/ {
     behaviors {
         /* TD(0): tap=LGUI+SPACE, hold=LGUI */
         td0: td0 {
@@ -50,20 +48,21 @@
     };
 
     /*
-     * Combo: left-thumb inner + right-thumb outer → momentary BT layer (layer 3)
-     * Key positions on Corne Choc Pro (0-indexed, left-to-right):
-     *   Thumb row starts at position 36: L0=36, L1=37, L2=38, R0=39, R1=40, R2=41
+     * Combo: left-thumb inner (36) + right-thumb outer (39) → BT layer (layer 3)
+     * Combo: left-thumb mid (35) + right-thumb mid (38) → FN layer (layer 2)
+     * Key positions on Corne Choc Pro 5-col (0-indexed, 40 keys total):
+     *   Row 0: 0-11, Row 1: 12-23, Row 2: 24-33, Thumbs: 34-39 (L0=34, L1=35, L2=36, R0=37, R1=38, R2=39)
      */
     combos {
         compatible = "zmk,combos";
         combo_bt {
             timeout-ms = <50>;
-            key-positions = <36 41>;
+            key-positions = <36 39>;
             bindings = <&mo 3>;
         };
         combo_fn {
             timeout-ms = <50>;
-            key-positions = <37 40>;
+            key-positions = <35 38>;
             bindings = <&mo 2>;
         };
     };
@@ -86,10 +85,10 @@
         default_layer {
             display-name = "BASE";
             bindings = <
-                &kp Q  &kp W  &kp F  &kp P  &kp B  &kp CAPS    &kp J     &kp L  &kp U     &kp Y    &kp SEMI  &kp NO
-                &kp A  &kp R  &kp S  &kp T  &kp G  &td1 LCTRL LSHFT    &kp M     &kp N  &kp E     &kp I    &kp O     &kp PSCRN
+                &kp Q  &kp W  &kp F  &kp P  &kp B  &kp CAPS    &kp J     &kp L  &kp U     &kp Y    &kp SEMI  &none
+                &kp A  &kp R  &kp S  &kp T  &kp G  &sk RALT    &kp M     &kp N  &kp E     &kp I    &kp O     &kp PSCRN
                 &kp Z  &kp X  &kp C  &kp D  &kp V              &kp K     &kp H  &kp COMMA &kp DOT  &kp FSLH
-                                     &td0 LGUI LG(SPACE)  &sk RALT  &kp SPACE    &kp BSPC  &lt 1 ESC  &kp RET
+                                     &td0 LGUI LG(SPACE)  &td1 LCTRL LSHFT  &kp SPACE    &kp BSPC  &lt 1 ESC  &kp RET
             >;
             sensor-bindings = <
                 &inc_dec_kp C_VOL_DN C_VOL_UP
