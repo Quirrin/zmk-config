@@ -6,10 +6,10 @@
  * Keymap translated from corne-keymaps.vil (Vial/QMK) → ZMK
  * Layout: Colemak-DH variant, 3 primary layers + BT/system layer
  *
- * Vial tap-dance mapping (approximated with hold-tap):
- *   TD(0): tap=LGUI+SPACE  hold=LGUI         → &td0 LGUI LG(SPACE)
- *   TD(1): tap=sk LSHFT    hold=LCTRL        → &td1 LCTRL LSHFT
- *   LT1(ESC): layer-tap 1 / ESC              → &lt 1 ESC
+ * Thumb mapping:
+ *   Left:  &mt RIGHT_ALT TAB | &mst LCTRL LSHFT | &mt LEFT_GUI SPACE
+ *   Right: &lt 1 RET | &lt 2 ESC | &kp BACKSPACE
+ *   MST: tap=sticky LSHFT, hold=LCTRL (mod sticky tap)
  *
  * Left encoder (row 0-1): volume up/down
  * Right encoder: brightness (configured per layer via sensor-bindings)
@@ -26,20 +26,10 @@
     };
 
     behaviors {
-        /* TD(0): tap=LGUI+SPACE, hold=LGUI */
-        td0: td0 {
+        /* MST: mod sticky tap (hold = LCTRL, tap = sticky LSHFT) */
+        mst: mod_sticky_tap {
             compatible = "zmk,behavior-hold-tap";
-            label = "TD0";
-            #binding-cells = <2>;
-            flavor = "tap-preferred";
-            tapping-term-ms = <200>;
-            bindings = <&kp>, <&kp>;
-        };
-
-        /* TD(1): tap=sticky LSHFT, hold=LCTRL */
-        td1: td1 {
-            compatible = "zmk,behavior-hold-tap";
-            label = "TD1";
+            label = "MST";
             #binding-cells = <2>;
             flavor = "tap-preferred";
             tapping-term-ms = <200>;
@@ -72,23 +62,14 @@
 
         // ════════════════════════════════════════════════════════════════════
         // Layer 0 – BASE (Colemak-DH variant)
-        //
-        // ┌──────┬───┬───┬───┬───┬───┬──────╥──────┬───┬───┬───┬───┬──────┐
-        // │      │ Q │ W │ F │ P │ B │ CAPS ║      │ J │ L │ U │ Y │  ;  │
-        // ├──────┼───┼───┼───┼───┼───┼──────╫──────┼───┼───┼───┼───┼──────┤
-        // │      │ A │ R │ S │ T │ G │skRALT║      │ M │ N │ E │ I │  O  │
-        // ├──────┼───┼───┼───┼───┼───┴──────╨──────┴───┼───┼───┼───┼──────┤
-        // │      │ Z │ X │ C │ D │ V                    │ K │ H │ , │  .  │  /  │
-        // └──────┴───┴───┴─┬─┴─┬─┴──┬──────────┬───┬───┴───┘
-        //                  │td0│td1 │   SPC    │BSP│lt1ESC│ENT│
         // ════════════════════════════════════════════════════════════════════
         default_layer {
             display-name = "BASE";
             bindings = <
-                &kp Q  &kp W  &kp F  &kp P  &kp B  &kp CAPS    &kp J     &kp L  &kp U     &kp Y    &kp SEMI  &none
-                &kp A  &kp R  &kp S  &kp T  &kp G  &sk RALT    &kp M     &kp N  &kp E     &kp I    &kp O     &kp PSCRN
+                &kp Q  &kp W  &kp F  &kp P  &kp B  &kp CAPS    &none     &kp J     &kp L  &kp U     &kp Y    &kp SEMI
+                &kp A  &kp R  &kp S  &kp T  &kp G  &sk RALT    &kp PSCRN &kp M     &kp N  &kp E     &kp I    &kp O
                 &kp Z  &kp X  &kp C  &kp D  &kp V              &kp K     &kp H  &kp COMMA &kp DOT  &kp FSLH
-                                     &td0 LGUI LG(SPACE)  &td1 LCTRL LSHFT  &kp SPACE    &kp BSPC  &lt 1 ESC  &kp RET
+                             &mt RIGHT_ALT TAB  &mst LCTRL LSHFT  &mt LEFT_GUI SPACE    &lt 1 RET  &lt 2 ESC  &kp BACKSPACE
             >;
             sensor-bindings = <
                 &inc_dec_kp C_VOL_DN C_VOL_UP
@@ -99,18 +80,15 @@
         };
 
         // ════════════════════════════════════════════════════════════════════
-        // Layer 1 – SYM / NAV  (activated via &lt 1 ESC on right thumb)
-        //
-        // Left: numbers 1-5, symbols row
-        // Right: numbers 6-0, navigation arrows, more symbols
+        // Layer 1 – SYM / NAV  (activated via &lt 1 RET on right thumb)
         // ════════════════════════════════════════════════════════════════════
         sym_layer {
             display-name = "SYM";
             bindings = <
-                &kp N1      &kp N2     &kp N3    &kp N4    &kp N5    &rgb_ug RGB_BRI    &kp N6    &kp N7   &kp N8      &kp N9   &kp N0    &rgb_ug RGB_BRD
-                &kp GRAVE   &kp SQT    &kp MINUS &kp EQUAL &kp ASTRK &kp LS(N5)         &kp DEL   &kp LEFT &kp UP      &kp DOWN &kp RIGHT &kp LS(N2)
-                &kp LS(N9)  &kp LS(N0) &kp LBKT  &kp RBKT  &kp LS(N6)                  &kp BSLH  &kp EXCL &kp LS(N7)  &kp HASH &kp LS(N4)
-                                                  &trans    &trans    &trans             &trans    &trans   &trans
+                &kp N1      &kp N2     &kp N3    &kp N4    &kp N5    &rgb_ug RGB_BRI    &rgb_ug RGB_BRD &kp N6    &kp N7   &kp N8      &kp N9   &kp N0
+                &kp GRAVE   &kp SQT    &kp MINUS &kp EQUAL &kp ASTRK &kp LS(N5)         &kp LS(N2)      &kp DEL   &kp LEFT &kp UP      &kp DOWN &kp RIGHT
+                &kp LS(N9)  &kp LS(N0) &kp LBKT  &kp RBKT  &kp LS(N6)                  &kp BSLH        &kp EXCL &kp LS(N7)  &kp HASH &kp LS(N4)
+                                                  &trans    &trans    &trans             &trans          &trans   &trans
             >;
         };
 
